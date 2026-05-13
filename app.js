@@ -8,6 +8,7 @@ const productRoutes = require('./routes/products.routes');
 const userRoutes = require('./routes/users.routes');
 const cartRoutes = require('./routes/cart.routes');
 const orderRoutes = require('./routes/orders.routes');
+const paymentRoutes = require('./routes/payments.routes');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./docs/openapi.yaml');
@@ -53,5 +54,6 @@ app.use('/products', productRoutes);
 app.use('/users', userRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
+app.use('/payments', paymentRoutes);
 
 module.exports = app;

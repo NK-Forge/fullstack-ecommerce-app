@@ -158,6 +158,42 @@ describe('E-Commerce API smoke test', () => {
     assert.isArray(response.body.items);
   });
 
+  it('rejects Stripe checkout session without a token', async () => {
+    const response = await request(app)
+      .post(`/payments/checkout-session/${userId}`);
+
+    assert.equal(response.status, 401);
+    assert.equal(response.body.message, 'Authorization token required');
+  });
+
+  it('rejects Stripe checkout session for another user', async () => {
+    const response = await request(app)
+      .post(`/payments/checkout-session/${userId + 999}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    assert.equal(response.status, 403);
+    assert.equal(response.body.message, 'You can only create checkout sessions for your own cart');
+  });
+
+  it('returns configuration error when Stripe checkout is not configured', async () => {
+    const originalStripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+    try {
+      delete process.env.STRIPE_SECRET_KEY;
+
+      const response = await request(app)
+        .post(`/payments/checkout-session/${userId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      assert.equal(response.status, 503);
+      assert.equal(response.body.message, 'Stripe is not configured');
+    } finally {
+      if (originalStripeSecretKey) {
+        process.env.STRIPE_SECRET_KEY = originalStripeSecretKey;
+      }
+    }
+  });
+
   it('updates a cart item', async () => {
     const response = await request(app)
       .put(`/cart/${userId}/items/${productId}`)
