@@ -66,3 +66,33 @@ export async function addCartItem(userId, token, productId, quantity = 1) {
     })
   });
 }
+
+export async function updateCartItem(userId, token, productId, quantity) {
+  return request(`/cart/${userId}/items/${productId}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      quantity
+    })
+  });
+}
+
+export async function removeCartItem(userId, token, productId) {
+  return request(`/cart/${userId}/items/${productId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+}
+
+export async function clearCart(userId, token) {
+  return request(`/cart/${userId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+}
