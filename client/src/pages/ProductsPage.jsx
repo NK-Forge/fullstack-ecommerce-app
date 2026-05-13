@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getProducts } from '../api/apiClient';
+import { Link } from 'react-router-dom';
+import { addCartItem, getProducts } from '../api/apiClient';
+import { useAuth } from '../auth/useAuth';
 
 function formatPrice(price) {
   const numericPrice = Number(price);
@@ -14,10 +16,17 @@ function formatPrice(price) {
   });
 }
 
+function getInventoryCount(product) {
+  return product.inventory_quantity ?? product.inventoryQuantity ?? 0;
+}
+
 function ProductsPage() {
+  const { isAuthenticated, token, user } = useAuth();
   const [products, setProducts] = useState([]);
   const [status, setStatus] = useState('loading');
   const [errorMessage, setErrorMessage] = useState('');
+  const [cartStatusByProductId, setCartStatusByProductId] = useState({});
+  const [cartMessageByProductId, setCartMessageByProductId] = useState({});
 
   useEffect(() => {
     let isMounted = true;
@@ -44,6 +53,42 @@ function ProductsPage() {
       isMounted = false;
     };
   }, []);
+
+  async function handleAddToCart(product) {
+    setCartStatusByProductId((currentStatuses) => ({
+      ...currentStatuses,
+      [product.id]: 'submitting'
+    }));
+
+    setCartMessageByProductId((currentMessages) => ({
+      ...currentMessages,
+      [product.id]: ''
+    }));
+
+    try {
+      const response = await addCartItem(user.id, token, product.id, 1);
+
+      setCartStatusByProductId((currentStatuses) => ({
+        ...currentStatuses,
+        [product.id]: 'success'
+      }));
+
+      setCartMessageByProductId((currentMessages) => ({
+        ...currentMessages,
+        [product.id]: response.message || 'Added to cart.'
+      }));
+    } catch (err) {
+      setCartStatusByProductId((currentStatuses) => ({
+        ...currentStatuses,
+        [product.id]: 'error'
+      }));
+
+      setCartMessageByProductId((currentMessages) => ({
+        ...currentMessages,
+        [product.id]: err.message
+      }));
+    }
+  }
 
   return (
     <main>
@@ -74,21 +119,50 @@ function ProductsPage() {
 
         {status === 'success' && products.length > 0 && (
           <div className="product-grid">
-            {products.map((product) => (
-              <article className="product-card" key={product.id}>
-                <div>
-                  <h2>{product.name}</h2>
-                  <p>{product.description || 'No description available.'}</p>
-                </div>
+            {products.map((product) => {
+              const inventoryCount = getInventoryCount(product);
+              const isOutOfStock = inventoryCount <= 0;
+              const cartStatus = cartStatusByProductId[product.id];
+              const cartMessage = cartMessageByProductId[product.id];
+              const isAdding = cartStatus === 'submitting';
 
-                <div className="product-meta">
-                  <span>{formatPrice(product.price)}</span>
-                  <span>
-                    Stock: {product.inventory_quantity ?? product.inventoryQuantity ?? 0}
-                  </span>
-                </div>
-              </article>
-            ))}
+              return (
+                <article className="product-card" key={product.id}>
+                  <div>
+                    <h2>{product.name}</h2>
+                    <p>{product.description || 'No description available.'}</p>
+                  </div>
+
+                  <div className="product-meta">
+                    <span>{formatPrice(product.price)}</span>
+                    <span>Stock: {inventoryCount}</span>
+                  </div>
+
+                  <div className="product-actions">
+                    {isAuthenticated ? (
+                      <button
+                        className="primary-button"
+                        type="button"
+                        onClick={() => handleAddToCart(product)}
+                        disabled={isAdding || isOutOfStock}
+                      >
+                        {isAdding ? 'Adding...' : 'Add to Cart'}
+                      </button>
+                    ) : (
+                      <Link className="secondary-link" to="/login">
+                        Login to Add
+                      </Link>
+                    )}
+                  </div>
+
+                  {cartMessage && (
+                    <p className={`inline-message ${cartStatus === 'error' ? 'error-message' : 'success-message'}`}>
+                      {cartMessage}
+                    </p>
+                  )}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>

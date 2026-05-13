@@ -348,6 +348,22 @@ h2 {
   font-weight: 900;
 }
 
+.product-actions {
+  margin-top: 1rem;
+}
+
+.product-actions .primary-button,
+.product-actions .secondary-link {
+  width: 100%;
+}
+
+.inline-message {
+  margin: 1rem 0 0;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.85rem;
+  line-height: 1.5;
+}
+
 @media (max-width: 860px) {
   .form-panel {
     grid-template-columns: 1fr;

@@ -53,3 +53,16 @@ export async function getCart(userId, token) {
     }
   });
 }
+
+export async function addCartItem(userId, token, productId, quantity = 1) {
+  return request(`/cart/${userId}/items`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      productId,
+      quantity
+    })
+  });
+}
