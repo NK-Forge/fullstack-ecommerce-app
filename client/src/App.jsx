@@ -4,6 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrdersPage from './pages/OrdersPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -24,7 +26,10 @@ function App() {
           <NavLink to="/products">Products</NavLink>
 
           {isAuthenticated && (
-            <NavLink to="/cart">Cart</NavLink>
+            <>
+              <NavLink to="/cart">Cart</NavLink>
+              <NavLink to="/orders">Orders</NavLink>
+            </>
           )}
 
           {!isAuthenticated && (
@@ -56,6 +61,22 @@ function App() {
           element={(
             <ProtectedRoute>
               <CartPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/checkout"
+          element={(
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/orders"
+          element={(
+            <ProtectedRoute>
+              <OrdersPage />
             </ProtectedRoute>
           )}
         />

@@ -444,12 +444,30 @@ h2 {
   line-height: 1.5;
 }
 
+.checkout-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 26rem);
+  gap: 2rem;
+  align-items: start;
+}
+
+.checkout-card {
+  padding: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 1.25rem;
+  background: rgba(30, 41, 59, 0.72);
+}
+
 @media (max-width: 860px) {
   .form-panel {
     grid-template-columns: 1fr;
   }
 
   .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-panel {
     grid-template-columns: 1fr;
   }
 }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   clearCart,
   getCart,
@@ -253,9 +254,9 @@ function CartPage() {
               <p className="cart-total">{formatPrice(total)}</p>
 
               <div className="cart-summary-actions">
-                <button className="primary-button" type="button" disabled={isWorking}>
-                  Continue to Checkout
-                </button>
+                <Link className="button-link full-width-button" to="/checkout">
+                Continue to Checkout
+                </Link>
 
                 <button
                   className="danger-button full-width-button"

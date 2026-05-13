@@ -96,3 +96,12 @@ export async function clearCart(userId, token) {
     }
   });
 }
+
+export async function createOrder(userId, token) {
+  return request(`/orders/${userId}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+}
