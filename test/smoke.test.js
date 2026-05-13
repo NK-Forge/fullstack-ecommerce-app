@@ -23,6 +23,8 @@ describe('E-Commerce API smoke test', () => {
   let userId;
   let productId;
   let orderId;
+  let secondUserId;
+  let secondToken;
 
   it('returns API health status', async () => {
     const response = await request(app)
@@ -70,6 +72,35 @@ describe('E-Commerce API smoke test', () => {
     assert.equal(response.body.user.email, testUser.email);
 
     token = response.body.token;
+  });
+
+  it('registers a second user for ownership tests', async () => {
+    const response = await request(app)
+      .post('/auth/register')
+      .send({
+        username: 'ownership_user',
+        email: 'ownership_user@example.com',
+        password: 'password123'
+      });
+
+    assert.equal(response.status, 201);
+    assert.exists(response.body.user.id);
+
+    secondUserId = response.body.user.id;
+  });
+
+  it('logs in the second user and returns a token', async () => {
+    const response = await request(app)
+      .post('/auth/login')
+      .send({
+        email: 'ownership_user@example.com',
+        password: 'password123'
+      });
+
+    assert.equal(response.status, 200);
+    assert.exists(response.body.token);
+
+    secondToken = response.body.token;
   });
 
   it('rejects auth/me without a token', async () => {
@@ -194,6 +225,46 @@ describe('E-Commerce API smoke test', () => {
     }
   });
 
+  it('rejects cart access for another user', async () => {
+    const response = await request(app)
+      .get(`/cart/${userId}`)
+      .set('Authorization', `Bearer ${secondToken}`);
+
+    assert.equal(response.status, 403);
+    assert.equal(response.body.message, 'You can only access your own resources');
+  });
+
+  it('rejects adding cart items for another user', async () => {
+    const response = await request(app)
+      .post(`/cart/${userId}/items`)
+      .set('Authorization', `Bearer ${secondToken}`)
+      .send({
+        productId: productId,
+        quantity: 1
+      });
+
+    assert.equal(response.status, 403);
+    assert.equal(response.body.message, 'You can only access your own resources');
+  });
+
+  it('rejects creating an order for another user', async () => {
+    const response = await request(app)
+      .post(`/orders/${userId}`)
+      .set('Authorization', `Bearer ${secondToken}`);
+
+    assert.equal(response.status, 403);
+    assert.equal(response.body.message, 'You can only access your own resources');
+  });
+
+  it('rejects viewing another user order history', async () => {
+    const response = await request(app)
+      .get(`/orders/user/${userId}`)
+      .set('Authorization', `Bearer ${secondToken}`);
+
+    assert.equal(response.status, 403);
+    assert.equal(response.body.message, 'You can only access your own resources');
+  });
+
   it('updates a cart item', async () => {
     const response = await request(app)
       .put(`/cart/${userId}/items/${productId}`)
@@ -316,5 +387,13 @@ describe('E-Commerce API smoke test', () => {
 
     assert.equal(response.status, 200);
     assert.equal(response.body.message, 'User deleted successfully');
+  });
+
+  it('deletes the second test user', async () => {
+    const response = await request(app)
+      .delete(`/users/${secondUserId}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    assert.equal(response.status, 200);
   });
 });
