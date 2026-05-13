@@ -458,6 +458,61 @@ h2 {
   background: rgba(30, 41, 59, 0.72);
 }
 
+.empty-state {
+  display: grid;
+  gap: 1rem;
+}
+
+.empty-state .button-link {
+  width: fit-content;
+}
+
+.orders-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 1.25rem;
+  background: rgba(30, 41, 59, 0.72);
+}
+
+.order-card h2 {
+  margin-bottom: 0.45rem;
+  font-size: 1.8rem;
+}
+
+.order-card p {
+  margin-bottom: 0;
+  color: #cbd5e1;
+}
+
+.order-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 0.75rem;
+  color: #f8fafc;
+  font-weight: 800;
+}
+
+.order-meta span {
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.status-pill {
+  color: #38bdf8;
+  text-transform: capitalize;
+}
+
 @media (max-width: 860px) {
   .form-panel {
     grid-template-columns: 1fr;
@@ -503,5 +558,14 @@ h2 {
   .cart-item-controls {
     align-items: start;
     flex-direction: column;
+  }
+
+  .order-card {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .order-meta {
+    justify-content: start;
   }
 }

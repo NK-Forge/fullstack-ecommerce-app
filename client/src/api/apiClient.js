@@ -105,3 +105,13 @@ export async function createOrder(userId, token) {
     }
   });
 }
+
+export async function getUserOrders(userId, token) {
+  const data = await request(`/orders/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  return data.orders || [];
+}
