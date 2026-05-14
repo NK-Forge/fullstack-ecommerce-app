@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
-client/node_modules/
+
+# Build output
+dist/
+build/
 
 # Environment variables
 .env
@@ -16,33 +19,15 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Runtime / process files
-pids/
-*.pid
-*.seed
-*.pid.lock
-
 # Test / coverage output
 coverage/
-.nyc_output/
 test-results/
 playwright-report/
 
-# Build output
-dist/
-build/
-client/dist/
-client/build/
-
-# React / Vite cache
+# Vite / tooling cache
 .vite/
-client/.vite/
-
-# Cache directories
 .cache/
-.parcel-cache/
 .eslintcache
-stylelintcache
 
 # OS files
 .DS_Store
@@ -55,13 +40,6 @@ desktop.ini
 !.vscode/settings.json
 .idea/
 
-# Local database / generated data
-*.sqlite
-*.sqlite3
-*.db
-*.dump
-*.backup
-
 # Temporary files
 tmp/
 temp/
@@ -72,6 +50,3 @@ temp/
 # Upload / handoff communication files
 *.zip
 *[Rr]iven*
-
-# Render / deployment local files
-.render/

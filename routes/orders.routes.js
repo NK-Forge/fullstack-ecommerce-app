@@ -4,29 +4,34 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/:userId', authMiddleware.requireAuth, async (req, res) => {
-  const userId = Number(req.params.userId);
+router.post(
+  '/:userId',
+  authMiddleware.requireAuth,
+  authMiddleware.requireSameUser('userId'),
+  async (req, res) => {
+    const userId = Number(req.params.userId);
 
-  try {
-    const order = await orderModel.createOrderFromCart(userId);
+    try {
+      const order = await orderModel.createOrderFromCart(userId);
 
-    if (order.error) {
-      return res.status(400).json({
-        message: order.error
+      if (order.error) {
+        return res.status(400).json({
+          message: order.error
+        });
+      }
+
+      res.status(201).json({
+        message: 'Order created successfully',
+        order: order
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: 'Unable to create order',
+        error: err.message
       });
     }
-
-    res.status(201).json({
-      message: 'Order created successfully',
-      order: order
-    });
-  } catch (err) {
-    res.status(500).json({
-      message: 'Unable to create order',
-      error: err.message
-    });
   }
-});
+);
 
 router.get('/', authMiddleware.requireAuth, async (req, res) => {
   try {
@@ -43,22 +48,27 @@ router.get('/', authMiddleware.requireAuth, async (req, res) => {
   }
 });
 
-router.get('/user/:userId', authMiddleware.requireAuth, async (req, res) => {
-  const userId = Number(req.params.userId);
+router.get(
+  '/user/:userId',
+  authMiddleware.requireAuth,
+  authMiddleware.requireSameUser('userId'),
+  async (req, res) => {
+    const userId = Number(req.params.userId);
 
-  try {
-    const orders = await orderModel.getOrdersByUserId(userId);
+    try {
+      const orders = await orderModel.getOrdersByUserId(userId);
 
-    res.status(200).json({
-      orders: orders
-    });
-  } catch (err) {
-    res.status(500).json({
-      message: 'Unable to get user orders',
-      error: err.message
-    });
+      res.status(200).json({
+        orders: orders
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: 'Unable to get user orders',
+        error: err.message
+      });
+    }
   }
-});
+);
 
 router.get('/:id', authMiddleware.requireAuth, async (req, res) => {
   const id = Number(req.params.id);

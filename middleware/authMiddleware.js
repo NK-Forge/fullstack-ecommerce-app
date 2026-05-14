@@ -30,6 +30,28 @@ const requireAuth = (req, res, next) => {
   }
 };
 
+const requireSameUser = (paramName = 'userId') => {
+  return (req, res, next) => {
+    const routeUserId = Number(req.params[paramName]);
+    const authUserId = Number(req.user?.id);
+
+    if (!Number.isInteger(routeUserId)) {
+      return res.status(400).json({
+        message: 'Valid user id is required'
+      });
+    }
+
+    if (routeUserId !== authUserId) {
+      return res.status(403).json({
+        message: 'You can only access your own resources'
+      });
+    }
+
+    next();
+  };
+};
+
 module.exports = {
-  requireAuth: requireAuth
+  requireAuth: requireAuth,
+  requireSameUser: requireSameUser
 };
