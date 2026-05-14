@@ -8,7 +8,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "db:schema": "node scripts/apply-schema.js",
-    "build": "npm install --prefix client && npm run build --prefix client"
+    "build": "npm --prefix client ci --include=dev && npm --prefix client run build && npm --prefix client prune --omit=dev"
   },
   "keywords": [],
   "author": "",
