@@ -7,11 +7,11 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body || {};
+  const { email, password } = req.body || {};
 
-  if (!username || !email || !password) {
+  if (!email || !password) {
     return res.status(400).json({
-      message: 'Username, email, and password are required'
+      message: 'Email and password are required'
     });
   }
 
@@ -27,7 +27,7 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const newUser = await userModel.createUser({
-      username: username,
+      username: email,
       email: email,
       passwordHash: passwordHash
     });

@@ -1,4 +1,4 @@
-import { NavLink, Route, Routes } from 'react-router-dom';
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './auth/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
@@ -12,16 +12,30 @@ import OrdersPage from './pages/OrdersPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
+import heroBackground from './assets/forge-storefront-hero.png';
+import pageBackground from './assets/non-home-bg.png';
 import './App.css';
 
 function App() {
   const { isAuthenticated, user, logout } = useAuth();
 
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+  const appShellStyle = isHomePage
+    ? { '--home-background': `url(${heroBackground})` }
+    : { '--page-background': `url(${pageBackground})` };
+
   return (
-    <div className="app-shell">
+    <div
+      className={`app-shell${isHomePage ? ' app-shell-home' : ' app-shell-page'}`}
+      style={appShellStyle}
+    >
       <header className="site-header">
-        <NavLink className="brand" to="/">
-          Full-Stack E-Commerce
+        <NavLink className="brand" to="/" aria-label="Forge: Storefront home">
+          <span className="brand-mark" aria-hidden="true">
+            NK
+          </span>
+          <span className="brand-text">Forge: Storefront</span>
         </NavLink>
 
         <nav className="site-nav" aria-label="Main navigation">

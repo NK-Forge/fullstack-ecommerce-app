@@ -62,17 +62,17 @@ function OAuthCallbackPage() {
   }, [completeOAuthLogin, navigate, oauthResult]);
 
   return (
-    <main>
-      <section className="panel">
+    <main className="utility-page">
+      <section className="utility-card" aria-labelledby="oauth-heading">
         <p className="eyebrow">Google OAuth</p>
-        <h1>Signing You In</h1>
+        <h1 id="oauth-heading">Signing You In</h1>
 
         <p className={`form-message ${status === 'error' ? 'error-message' : 'success-message'}`}>
           {message}
         </p>
 
         {status === 'error' && (
-          <div className="hero-actions">
+          <div className="utility-actions">
             <Link className="button-link" to="/login">
               Back to Login
             </Link>

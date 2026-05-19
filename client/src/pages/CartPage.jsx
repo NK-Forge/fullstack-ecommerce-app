@@ -7,6 +7,9 @@ import {
   updateCartItem
 } from '../api/apiClient';
 import { useAuth } from '../auth/useAuth';
+import forgeNotebookImage from '../assets/forge_notebook.png';
+import forgePenImage from '../assets/forge_pen.png';
+import smokeTestProductImage from '../assets/smoke_test_product.png';
 
 function formatPrice(price) {
   const numericPrice = Number(price);
@@ -27,6 +30,24 @@ function getProductId(item) {
 
 function getInventoryCount(item) {
   return item.inventory_quantity ?? item.inventoryQuantity ?? 0;
+}
+
+function getCartItemImage(productName = '') {
+  const normalizedName = productName.toLowerCase();
+
+  if (normalizedName.includes('notebook')) {
+    return forgeNotebookImage;
+  }
+
+  if (normalizedName.includes('pen')) {
+    return forgePenImage;
+  }
+
+  if (normalizedName.includes('smoke')) {
+    return smokeTestProductImage;
+  }
+
+  return null;
 }
 
 function CartPage() {
@@ -150,12 +171,11 @@ function CartPage() {
   }
 
   return (
-    <main>
-      <section className="panel">
-        <div className="section-header">
+    <main className="cart-page">
+      <section className="cart-page-shell" aria-labelledby="cart-heading">
+        <div className="cart-page-header">
           <div>
-            <p className="eyebrow">Shopping Cart</p>
-            <h1>Your Cart</h1>
+            <h1 id="cart-heading">Selected Goods</h1>
           </div>
 
           <p className="product-count">
@@ -180,9 +200,15 @@ function CartPage() {
         )}
 
         {status === 'success' && items.length === 0 && (
-          <p className="status-message">
-            Your cart is empty. Visit the products page to add something.
-          </p>
+          <div className="cart-empty-state">
+            <p className="eyebrow">Empty Cart</p>
+            <p>
+              Browse the catalog and add an item when you are ready to test the checkout flow.
+            </p>
+            <Link className="button-link" to="/products">
+              View Products
+            </Link>
+          </div>
         )}
 
         {status === 'success' && items.length > 0 && (
@@ -193,55 +219,65 @@ function CartPage() {
                 const productId = getProductId(item);
                 const quantity = Number(item.quantity);
                 const itemTotal = Number(item.price) * quantity;
+                const cartItemImage = getCartItemImage(item.name);
 
                 return (
                   <article className="cart-item" key={item.id ?? productId}>
-                    <div className="cart-item-header">
-                      <div>
-                        <h2>{item.name}</h2>
-                        <p>{item.description || 'No description available.'}</p>
-                      </div>
+                    <Link className="cart-item-image" to={`/products/${productId}`}>
+                      {cartItemImage ? (
+                        <img src={cartItemImage} alt={item.name} />
+                      ) : (
+                        <span>{item.name?.slice(0, 2) || 'NK'}</span>
+                      )}
+                    </Link>
 
-                      <button
-                        className="danger-button"
-                        type="button"
-                        onClick={() => handleRemoveItem(item)}
-                        disabled={isWorking}
-                      >
-                        Remove
-                      </button>
-                    </div>
+                    <div className="cart-item-body">
+                      <div className="cart-item-header">
+                        <div>
+                          <Link className="cart-item-title-link" to={`/products/${productId}`}>
+                            <h2>{item.name}</h2>
+                          </Link>
 
-                    <div className="cart-item-meta">
-                      <span>{formatPrice(item.price)} each</span>
-                      <span>Stock: {inventoryCount}</span>
-                      <span>Item total: {formatPrice(itemTotal)}</span>
-                    </div>
-
-                    <div className="cart-item-controls">
-                      <div className="quantity-controls" aria-label={`Quantity controls for ${item.name}`}>
-                        <button
-                          className="secondary-button"
-                          type="button"
-                          onClick={() => handleQuantityChange(item, quantity - 1)}
-                          disabled={isWorking || quantity <= 1}
-                        >
-                          -
-                        </button>
-
-                        <span>Qty: {quantity}</span>
+                          <div className="cart-item-meta">
+                            <span>{formatPrice(item.price)} each</span>
+                            <span>{formatPrice(itemTotal)} total</span>
+                            <span>{inventoryCount} available</span>
+                          </div>
+                        </div>
 
                         <button
-                          className="secondary-button"
+                          className="danger-button"
                           type="button"
-                          onClick={() => handleQuantityChange(item, quantity + 1)}
-                          disabled={isWorking || quantity >= inventoryCount}
+                          onClick={() => handleRemoveItem(item)}
+                          disabled={isWorking}
                         >
-                          +
+                          Remove
                         </button>
                       </div>
 
-                      <p className="cart-product-id">Product #{productId}</p>
+                      <div className="cart-item-controls">
+                        <div className="quantity-controls" aria-label={`Quantity controls for ${item.name}`}>
+                          <button
+                            className="secondary-button"
+                            type="button"
+                            onClick={() => handleQuantityChange(item, quantity - 1)}
+                            disabled={isWorking || quantity <= 1}
+                          >
+                            -
+                          </button>
+
+                          <span>Qty {quantity}</span>
+
+                          <button
+                            className="secondary-button"
+                            type="button"
+                            onClick={() => handleQuantityChange(item, quantity + 1)}
+                            disabled={isWorking || quantity >= inventoryCount}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </article>
                 );
@@ -250,12 +286,12 @@ function CartPage() {
 
             <aside className="cart-summary" aria-label="Cart summary">
               <p className="eyebrow">Summary</p>
-              <h2>Total</h2>
+              <h2>Order Total</h2>
               <p className="cart-total">{formatPrice(total)}</p>
 
               <div className="cart-summary-actions">
                 <Link className="button-link full-width-button" to="/checkout">
-                Continue to Checkout
+                  Continue to Checkout
                 </Link>
 
                 <button

@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { addCartItem, getProducts } from '../api/apiClient';
 import { useAuth } from '../auth/useAuth';
+import forgeNotebookImage from '../assets/forge_notebook.png';
+import forgePenImage from '../assets/forge_pen.png';
+import smokeTestProductImage from '../assets/smoke_test_product.png';
 
 function formatPrice(price) {
   const numericPrice = Number(price);
@@ -19,6 +22,24 @@ function formatPrice(price) {
 function getInventoryCount(product) {
   return product.inventory_quantity ?? product.inventoryQuantity ?? 0;
 }
+
+const getProductImage = (productName = '') => {
+  const normalizedName = productName.toLowerCase();
+
+  if (normalizedName.includes('notebook')) {
+    return forgeNotebookImage;
+  }
+
+  if (normalizedName.includes('pen')) {
+    return forgePenImage;
+  }
+
+  if (normalizedName.includes('smoke')) {
+    return smokeTestProductImage;
+  }
+
+  return null;
+};
 
 function ProductsPage() {
   const { isAuthenticated, token, user } = useAuth();
@@ -93,16 +114,6 @@ function ProductsPage() {
   return (
     <main>
       <section className="products-section" aria-labelledby="products-heading">
-        <div className="section-header">
-          <div>
-            <p className="eyebrow">Catalog</p>
-            <h1 id="products-heading">Products</h1>
-          </div>
-          <p className="product-count">
-            {products.length} {products.length === 1 ? 'item' : 'items'}
-          </p>
-        </div>
-
         {status === 'loading' && (
           <p className="status-message">Loading products...</p>
         )}
@@ -120,6 +131,7 @@ function ProductsPage() {
         {status === 'success' && products.length > 0 && (
           <div className="product-grid">
             {products.map((product) => {
+              const productImage = getProductImage(product.name);
               const inventoryCount = getInventoryCount(product);
               const isOutOfStock = inventoryCount <= 0;
               const cartStatus = cartStatusByProductId[product.id];
@@ -128,32 +140,35 @@ function ProductsPage() {
 
               return (
                 <article className="product-card" key={product.id}>
-                  <div>
-                    <h2>{product.name}</h2>
-                    <p>{product.description || 'No description available.'}</p>
-                  </div>
+                  <Link className="product-image-link" to={`/products/${product.id}`}>
+                    <div className="product-image">
+                      {productImage ? (
+                        <img src={productImage} alt={product.name} />
+                      ) : (
+                        <span>{product.name?.slice(0, 2) || 'NK'}</span>
+                      )}
+                    </div>
+                  </Link>
 
-                  <div className="product-meta">
-                    <span>{formatPrice(product.price)}</span>
-                    <span>Stock: {inventoryCount}</span>
-                  </div>
-
-                  <div className="product-actions">
-                    <Link className="secondary-link" to={`/products/${product.id}`}>
-                      View Details
-                    </Link>
+                  <div className="product-card-footer">
+                    <div>
+                      <Link className="product-title-link" to={`/products/${product.id}`}>
+                        <h2>{product.name}</h2>
+                      </Link>
+                      <p className="product-price">{formatPrice(product.price)}</p>
+                    </div>
 
                     {isAuthenticated ? (
                       <button
-                        className="primary-button"
+                        className="primary-button product-card-cart-button"
                         type="button"
                         onClick={() => handleAddToCart(product)}
                         disabled={isAdding || isOutOfStock}
                       >
-                        {isAdding ? 'Adding...' : 'Add to Cart'}
+                        {isAdding ? 'Adding...' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                       </button>
                     ) : (
-                      <Link className="secondary-link" to="/login">
+                      <Link className="secondary-link product-card-cart-button" to="/login">
                         Login to Add
                       </Link>
                     )}

@@ -58,70 +58,68 @@ function LoginPage() {
   }
 
   return (
-    <main>
-      <section className="panel form-panel">
-        <div className="form-copy">
-          <p className="eyebrow">Account</p>
-          <h1>Login</h1>
+    <main className="auth-page auth-page-centered">
+      <section className="auth-card auth-card-centered" aria-labelledby="login-heading">
+        <div className="auth-card-header">
+          <p className="eyebrow">Account Access</p>
+          <h1 id="login-heading">Login</h1>
           <p>
             Sign in to access cart features, checkout, protected resources, and order history.
           </p>
         </div>
 
-        <div className="form-card">
-          <button className="oauth-button" type="button" onClick={handleGoogleLogin}>
-            Continue with Google
-          </button>
+        <button className="oauth-button" type="button" onClick={handleGoogleLogin}>
+          Continue with Google
+        </button>
 
-          <div className="form-divider">
-            <span>or</span>
+        <div className="form-divider">
+          <span>or</span>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-grid">
+            <label htmlFor="email">
+              Email
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                autoComplete="email"
+              />
+            </label>
+
+            <label htmlFor="password">
+              Password
+              <input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                minLength="6"
+                autoComplete="current-password"
+              />
+            </label>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <label htmlFor="email">
-                Email
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  autoComplete="email"
-                />
-              </label>
+          <button className="primary-button" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Logging In...' : 'Login'}
+          </button>
+        </form>
 
-              <label htmlFor="password">
-                Password
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  minLength="6"
-                  autoComplete="current-password"
-                />
-              </label>
-            </div>
-
-            <button className="primary-button" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Logging In...' : 'Login'}
-            </button>
-          </form>
-
-          {message && (
-            <p className={`form-message ${status === 'error' ? 'error-message' : 'success-message'}`}>
-              {message}
-            </p>
-          )}
-
-          <p className="form-helper">
-            Need an account? <Link to="/register">Create one here</Link>.
+        {message && (
+          <p className={`form-message ${status === 'error' ? 'error-message' : 'success-message'}`}>
+            {message}
           </p>
-        </div>
+        )}
+
+        <p className="form-helper">
+          Need an account? <Link to="/register">Create one here</Link>.
+        </p>
       </section>
     </main>
   );

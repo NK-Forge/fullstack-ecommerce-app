@@ -29,46 +29,60 @@ function CheckoutPage() {
   }
 
   return (
-    <main>
-      <section className="panel checkout-panel">
-        <div>
-          <p className="eyebrow">Checkout</p>
-          <h1>Secure Checkout</h1>
+    <main className="checkout-page">
+      <section className="checkout-page-shell" aria-labelledby="checkout-heading">
+        <div className="checkout-page-header">
+          <h1 id="checkout-heading">Checkout</h1>
           <p>
-            This step creates a Stripe Checkout Session from the current server-side cart,
-            then redirects you to Stripe to complete payment.
-          </p>
-          <p>
-            Order fulfillment will be finalized by a backend Stripe webhook in a follow-up step.
+            Review the secure payment handoff before continuing to Stripe.
           </p>
         </div>
 
-        <div className="checkout-card">
-          <p className="eyebrow">Payment</p>
-          <h2>Pay with Stripe</h2>
-          <p>
-            Stripe will handle the hosted payment page. Product names, quantities, and prices
-            come from the API cart, not from client-submitted checkout data.
-          </p>
-
-          <button
-            className="primary-button"
-            type="button"
-            onClick={handleStripeCheckout}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Redirecting to Stripe...' : 'Continue to Stripe'}
-          </button>
-
-          {message && (
-            <p className={`form-message ${status === 'error' ? 'error-message' : 'success-message'}`}>
-              {message}
+        <div className="checkout-layout">
+          <div className="checkout-brief">
+            <h2>Secure Stripe Handoff</h2>
+            <p>
+              The cart is verified by the server before Stripe receives the checkout request.
+              Product names, quantities, and prices come from the API cart.
             </p>
-          )}
 
-          <p className="form-helper">
-            Need to make changes? <Link to="/cart">Return to cart</Link>.
-          </p>
+            <div className="checkout-points" aria-label="Checkout safeguards">
+              <span>Server verified cart</span>
+              <span>Hosted Stripe payment</span>
+              <span>Webhook ready flow</span>
+            </div>
+          </div>
+
+          <aside className="checkout-card" aria-label="Payment action">
+            <h2>Payment</h2>
+            <p>
+              Continue to Stripe to complete the demo checkout flow.
+              Use the card number:
+            </p>
+            <pre className="card-number">4242 4242 4242 4242</pre>
+            <p>
+              with any future expiration date and CVC for this demo.
+            </p>
+
+            <button
+              className="primary-button"
+              type="button"
+              onClick={handleStripeCheckout}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Redirecting to Stripe...' : 'Continue to Stripe'}
+            </button>
+
+            {message && (
+              <p className={`form-message ${status === 'error' ? 'error-message' : 'success-message'}`}>
+                {message}
+              </p>
+            )}
+
+            <p className="form-helper">
+              Need to make changes? <Link to="/cart">Return to cart</Link>.
+            </p>
+          </aside>
         </div>
       </section>
     </main>

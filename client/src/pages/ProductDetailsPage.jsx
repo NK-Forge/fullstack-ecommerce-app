@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { addCartItem, getProduct } from '../api/apiClient';
 import { useAuth } from '../auth/useAuth';
+import forgeNotebookImage from '../assets/forge_notebook.png';
+import forgePenImage from '../assets/forge_pen.png';
+import smokeTestProductImage from '../assets/smoke_test_product.png';
 
 function formatPrice(price) {
   const numericPrice = Number(price);
@@ -20,6 +23,24 @@ function getInventoryCount(product) {
   return product.inventory_quantity ?? product.inventoryQuantity ?? 0;
 }
 
+const getProductImage = (productName = '') => {
+  const normalizedName = productName.toLowerCase();
+
+  if (normalizedName.includes('notebook')) {
+    return forgeNotebookImage;
+  }
+
+  if (normalizedName.includes('pen')) {
+    return forgePenImage;
+  }
+
+  if (normalizedName.includes('smoke')) {
+    return smokeTestProductImage;
+  }
+
+  return null;
+};
+
 function ProductDetailsPage() {
   const { productId } = useParams();
   const { isAuthenticated, token, user } = useAuth();
@@ -33,6 +54,7 @@ function ProductDetailsPage() {
   const inventoryCount = product ? getInventoryCount(product) : 0;
   const isOutOfStock = inventoryCount <= 0;
   const isAdding = cartStatus === 'submitting';
+  const productImage = product ? getProductImage(product.name) : null;
 
   useEffect(() => {
     let isMounted = true;
@@ -88,9 +110,17 @@ function ProductDetailsPage() {
             Unable to load product: {errorMessage}
           </p>
         )}
-
+        
         {status === 'success' && product && (
           <div className="product-detail-layout">
+            <div className="product-detail-visual">
+              {productImage ? (
+                <img src={productImage} alt={product.name} />
+              ) : (
+                <span>{product.name?.slice(0, 2) || 'NK'}</span>
+              )}
+            </div>
+
             <div className="product-detail-copy">
               <p className="eyebrow">Product Details</p>
               <h1>{product.name}</h1>
@@ -98,7 +128,7 @@ function ProductDetailsPage() {
 
               <div className="product-detail-meta">
                 <span>{formatPrice(product.price)}</span>
-                <span>Stock: {inventoryCount}</span>
+                <span>{isOutOfStock ? 'Out of stock' : `${inventoryCount} available`}</span>
               </div>
 
               <div className="product-detail-actions">
@@ -109,7 +139,7 @@ function ProductDetailsPage() {
                     onClick={handleAddToCart}
                     disabled={isAdding || isOutOfStock}
                   >
-                    {isAdding ? 'Adding...' : 'Add to Cart'}
+                    {isAdding ? 'Adding...' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                   </button>
                 ) : (
                   <Link className="button-link" to="/login">
@@ -128,13 +158,6 @@ function ProductDetailsPage() {
                 </p>
               )}
             </div>
-
-            <aside className="product-detail-card">
-              <p className="eyebrow">Catalog Info</p>
-              <h2>Product #{product.id}</h2>
-              <p>Status: {isOutOfStock ? 'Out of stock' : 'Available'}</p>
-              <p>Inventory: {inventoryCount}</p>
-            </aside>
           </div>
         )}
       </section>

@@ -1,26 +1,14 @@
-import { Link } from 'react-router-dom';
-
 function HomePage() {
   return (
-    <main>
-      <section className="hero">
-        <div>
-          <p className="eyebrow">Full-Stack E-Commerce</p>
-          <h1>Shop products powered by a real API.</h1>
+    <main className="home-page">
+      <section className="home-hero">
+        <div className="home-hero-content">
+          <p className="eyebrow">Full-Stack Portfolio Project</p>
+          <h1>NK-Forge: Storefront</h1>
           <p className="hero-copy">
-            This application connects a React client to a Node, Express, and Postgres backend.
-            Users will be able to register, log in, browse products, manage a cart, check out,
-            and view order history.
+            A full-stack ecommerce demo showcasing product browsing, user authentication,
+            cart management, protected checkout, Stripe payment handoff, and order history.
           </p>
-
-          <div className="hero-actions">
-            <Link className="button-link" to="/products">
-              Browse Products
-            </Link>
-            <Link className="secondary-link" to="/register">
-              Create Account
-            </Link>
-          </div>
         </div>
       </section>
     </main>

@@ -71,12 +71,14 @@ function OrdersPage() {
   }, [token, user.id]);
 
   return (
-    <main>
-      <section className="panel">
-        <div className="section-header">
+    <main className="orders-page">
+      <section className="orders-page-shell" aria-labelledby="orders-heading">
+        <div className="orders-page-header">
           <div>
-            <p className="eyebrow">Orders</p>
-            <h1>Order History</h1>
+            <h1 id="orders-heading">Order History</h1>
+            <p>
+              Review completed checkout sessions and order records from this demo account.
+            </p>
           </div>
 
           <p className="product-count">
@@ -116,10 +118,10 @@ function OrdersPage() {
           <div className="orders-list">
             {orders.map((order) => (
               <article className="order-card" key={order.id}>
-                <div>
-                  <p className="eyebrow">Order #{order.id}</p>
+                <div className="order-card-main">
+                  <p className="order-label">Order #{order.id}</p>
                   <h2>{formatPrice(order.total)}</h2>
-                  <p>
+                  <p className="order-date">
                     Placed on {formatDate(order.created_at ?? order.createdAt)}
                   </p>
                 </div>
@@ -127,9 +129,6 @@ function OrdersPage() {
                 <div className="order-meta">
                   <span className="status-pill">
                     {order.status}
-                  </span>
-                  <span>
-                    User #{order.user_id ?? order.userId}
                   </span>
                 </div>
               </article>
